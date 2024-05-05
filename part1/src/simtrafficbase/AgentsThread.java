@@ -2,6 +2,7 @@ package pcd.ass01.simtrafficbase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import pcd.ass01.simengineconcur.Barrier;
 import pcd.ass01.simengineseq.AbstractEnvironment;
@@ -12,7 +13,7 @@ import pcd.ass01.simengineseq.AbstractSimulation;
  * Thread managing the agents assigned to it
  * 
  */
-public class AgentsThread extends Thread {
+public class AgentsThread implements Callable<Boolean> {
 
   private final Barrier actBarrier;   // Barrier before doing an action.
   private final Barrier stepBarrier;  // Barrier before doing next step.
@@ -20,13 +21,17 @@ public class AgentsThread extends Thread {
   private final AbstractSimulation simulation;
   private final int dt;
 
-  public AgentsThread(Barrier barrier, Barrier eventBarrier, int dt, AbstractSimulation simulation){
+  public AgentsThread(Barrier actBarrier, Barrier eventBarrier, int dt, AbstractSimulation simulation, AbstractEnvironment env){
     super();
-    this.actBarrier = barrier;
+    this.actBarrier = actBarrier;
     this.stepBarrier = eventBarrier;
     this.carAgents = new ArrayList<>();
     this.simulation = simulation;
     this.dt = dt;
+
+    for (var a: carAgents) {
+      a.init(env);
+    }
   }
 
   public void addCar(CarAgent carAgent) {
@@ -46,17 +51,22 @@ public class AgentsThread extends Thread {
     actBarrier.waitBefore(simulation);
     this.carAgents.forEach(car -> car.senseAndDecide(this.dt));
     actBarrier.waitBefore(simulation);
-    this.carAgents.forEach(car -> car.act());
+    this.carAgents.forEach(CarAgent::act);
   }
 
   /**
    * Main loop of the thread
    */
-  public void run() {
-    while(true) {
-      stepBarrier.waitBefore(simulation);
-      this.step();
+  public Boolean call() {
+    try {
+      while (true) {
+        stepBarrier.waitBefore(simulation);
+        this.step();
+      }
+    } catch (Exception e) {
+      System.out.println("EFROROROR");
     }
+      return null;
   }
 }
 

@@ -13,8 +13,8 @@ public class RunTrafficSimulation {
 
 		int nThreads = Runtime.getRuntime().availableProcessors();
 //	 	var simulation = new TrafficSimulationSingleRoadTwoCars(2);
-//		var simulation = new TrafficSimulationSingleRoadSeveralCars(nThreads);
-		var simulation = new TrafficSimulationSingleRoadWithTrafficLightTwoCars(nThreads);
+		var simulation = new TrafficSimulationSingleRoadSeveralCars(nThreads);
+//		var simulation = new TrafficSimulationSingleRoadWithTrafficLightTwoCars(nThreads);
 //		var simulation = new TrafficSimulationWithCrossRoads(nThreads);
 		simulation.setup();
 

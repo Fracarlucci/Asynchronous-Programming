@@ -2,13 +2,12 @@ package pcd.ass01.simtrafficbase;
 
 import pcd.ass01.simengineconcur.Barrier;
 import pcd.ass01.simengineconcur.BarrierImpl;
-import pcd.ass01.simengineseq.AbstractAgent;
 import pcd.ass01.simengineseq.AbstractSimulation;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.concurrent.*;
 
 /**
  * Thread that manages all the threads of the simulation
@@ -27,7 +26,9 @@ public class ThreadManager {
     private int nSteps = 0;
     private long currentWallTime;
     private int nCyclesPerSec = 0;
-    private long totalTime=0;
+    private long totalTime = 0;
+    private final ExecutorService executor;
+
 
     public ThreadManager(int nThreadsPerCars, int nThreadsPerTrafficLights, AbstractSimulation sim, RoadsEnv env) {
         this.nThreadsPerCars = nThreadsPerCars;
@@ -38,23 +39,34 @@ public class ThreadManager {
         this.agentsThreads = new LinkedList<>();
         this.trafficLightsThreads = new LinkedList<>();
         this.env = env;
+        executor = Executors.newFixedThreadPool(nThreadsPerCars);
     }
 
     /**
      * Generate the threads for the cars
+     *
      * @param carAgents
      * @param dt
      */
     public void generateCars(List<CarAgent> carAgents, int dt) {
+
         this.agentsThreads.clear();
         var iter = carAgents.iterator(); // Iterator of cars.
-        final int carsPerThread = carAgents.size() / nThreadsPerCars;
-        int remainingCars = carAgents.size() % nThreadsPerCars;
+//        final int carsPerThread = carAgents.size() / nThreadsPerCars;
+//        int remainingCars = carAgents.size() % nThreadsPerCars;
 
-        for (int i = 0; i < nThreadsPerCars; i++) {
+        /*for (int i = 0; i < 1_000; i++) {
+            try {
+
+                agentsThreads.add(at);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
+
+        /*for (int i = 0; i < nThreadsPerCars; i++) {
 
             AgentsThread at = new AgentsThread(actBarrier, stepBarrier, dt, sim);
-            agentsThreads.add(at);
 
             IntStream.range(0, carsPerThread).forEach(j -> at.addCar(iter.next()));
 
@@ -62,11 +74,12 @@ public class ThreadManager {
                 remainingCars--;
                 at.addCar(iter.next());
             }
-        }
+        }*/
     }
 
     /**
      * Generate the threads for the traffic lights
+     *
      * @param trafficLights
      * @param dt
      */
@@ -92,15 +105,18 @@ public class ThreadManager {
 
     /**
      * Start the agents' threads
+     *
      * @param dt
      */
     public void startThreads(int dt) {
-        agentsThreads.forEach(ca -> {
-            ca.initCars(env);
-            ca.start();
-        });
+//        agentsThreads.forEach(ca -> {
+        for (int i = 0; i < 1_000; i++) {
+            executor.submit(new AgentsThread(actBarrier, stepBarrier, dt, sim, env));
+//            ca.initCars(env);
+//            ca.start();
+        }
 
-        if(trafficLightsThreads != null) {
+        if (trafficLightsThreads != null) {
             trafficLightsThreads.forEach(tl -> {
                 tl.init();
                 tl.start();
@@ -118,14 +134,14 @@ public class ThreadManager {
             while (actualSteps < this.nSteps) {
                 this.stepBarrier.waitBefore(sim);
 
-                if(startStepTime!=0){
+                if (startStepTime != 0) {
                     timePerStep += System.currentTimeMillis() - startStepTime;
                 }
                 t += dt;
                 currentWallTime = System.currentTimeMillis();
                 this.sim.notifyNewStep(t, env);
 
-                if(nCyclesPerSec >0){
+                if (nCyclesPerSec > 0) {
                     sim.syncWithWallTime(currentWallTime);
                 }
                 actualSteps++;
@@ -143,6 +159,7 @@ public class ThreadManager {
     public void setSteps(int nSteps) {
         this.nSteps = nSteps;
     }
+
     public Barrier getStepBarrier() {
         return stepBarrier;
     }
