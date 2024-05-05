@@ -9,7 +9,7 @@ import pcd.ass01.simengineseq.*;
 /**
  * Base class modeling the skeleton of an agent modeling a car in the traffic environment
  */
-public abstract class CarAgent extends AbstractAgent implements Callable<Boolean> {
+public abstract class CarAgent extends AbstractAgent implements Runnable {
 
   /* car model */
   protected double maxSpeed;
@@ -72,18 +72,14 @@ public abstract class CarAgent extends AbstractAgent implements Callable<Boolean
     return currentSpeed;
   }
 
-  public Boolean call() {
-    try {
+  @Override
+  public void run() {
       while (true) {
         log("Si avvia il ciclo");
         stepBarrier.waitBefore(simulation);
         log("Si sveglia");
         this.step();
       }
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    }
-    return null;
   }
   protected void log(String msg) {
     System.out.println("[CAR " + this.getAgentId() + "] " + msg);

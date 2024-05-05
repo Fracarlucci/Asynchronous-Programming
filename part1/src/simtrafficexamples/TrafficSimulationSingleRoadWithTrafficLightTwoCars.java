@@ -33,7 +33,7 @@ public class TrafficSimulationSingleRoadWithTrafficLightTwoCars extends Abstract
 
 		Road r = env.createRoad(new P2d(0,300), new P2d(1500,300));
 
-		TrafficLight tl = env.createTrafficLight(new P2d(740,300), TrafficLight.TrafficLightState.GREEN, 75, 25, 100);
+		TrafficLight tl = env.createTrafficLight(new P2d(740,300), TrafficLight.TrafficLightState.GREEN, 75, 25, 100, threadManager, this);
 		r.addTrafficLight(tl, 740);
 
 		threadManager.generateTrafficLight(List.of(tl), 1);
