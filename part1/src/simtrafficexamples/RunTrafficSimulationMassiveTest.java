@@ -11,12 +11,12 @@ public class RunTrafficSimulationMassiveTest {
 
 		// For Massive test, set the var
 		// 'stop' inside AbstractSimulation to true
-		var simulation = new TrafficSimulationSingleRoadMassiveNumberOfCars(numCars, nThreads);
-		simulation.setup();
+//		var simulation = new TrafficSimulationSingleRoadMassiveNumberOfCars(numCars, nThreads);
+//		simulation.setup();
 
 		log("Running the simulation: " + numCars + " cars, for " + nSteps + " steps ...");
 
-		simulation.run(nSteps);
+//		simulation.run(nSteps);
 	}
 
 	private static void log(String msg) {

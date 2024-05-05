@@ -48,7 +48,7 @@ public class TrafficSimulationSingleRoadMassiveNumberOfCars extends AbstractSimu
 					initialPos,
 					carAcceleration,
 					carDeceleration,
-					carMaxSpeed);
+					carMaxSpeed, threadManager.getActBarrier(), threadManager.getStepBarrier(), this);
 			this.addAgent(car);
             cars.add(car);
 
@@ -58,8 +58,8 @@ public class TrafficSimulationSingleRoadMassiveNumberOfCars extends AbstractSimu
     }
 
     @Override
-    public void run(int nSteps) { 
+    public void run(int nSteps) {
         this.threadManager.setSteps(nSteps);
-        this.threadManager.startThreads(1);
+//        this.threadManager.startThreads(1);
     }
 }

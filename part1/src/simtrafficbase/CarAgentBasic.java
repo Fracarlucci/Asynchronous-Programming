@@ -1,6 +1,7 @@
 package pcd.ass01.simtrafficbase;
 
 import pcd.ass01.simengineconcur.Barrier;
+import pcd.ass01.simengineseq.AbstractSimulation;
 
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
@@ -35,8 +36,8 @@ public class CarAgentBasic extends CarAgent {
 						 double initialPos,
 						 double acc,
 						 double dec,
-						 double vmax) {
-		super(id, env, road, initialPos, acc, dec, vmax);
+						 double vmax, Barrier actBarrier, Barrier stepBarrier, AbstractSimulation simulation) {
+		super(id, env, road, initialPos, acc, dec, vmax, actBarrier, stepBarrier, simulation);
 		state = CarAgentState.STOPPED;
 	}
 	

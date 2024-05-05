@@ -11,9 +11,8 @@ public class RunTrafficSimulation {
 
 	public static void main(String[] args) {
 
-		int nThreads = Runtime.getRuntime().availableProcessors();
 //	 	var simulation = new TrafficSimulationSingleRoadTwoCars(2);
-		var simulation = new TrafficSimulationSingleRoadSeveralCars(nThreads);
+		var simulation = new TrafficSimulationSingleRoadSeveralCars(30);
 //		var simulation = new TrafficSimulationSingleRoadWithTrafficLightTwoCars(nThreads);
 //		var simulation = new TrafficSimulationWithCrossRoads(nThreads);
 		simulation.setup();
@@ -23,6 +22,6 @@ public class RunTrafficSimulation {
 		view.display();
 		
 		simulation.addSimulationListener(stat);
-		simulation.addSimulationListener(view);		
+		simulation.addSimulationListener(view);
 	}
 }

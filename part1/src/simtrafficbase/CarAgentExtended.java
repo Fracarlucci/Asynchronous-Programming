@@ -32,7 +32,7 @@ public class CarAgentExtended extends CarAgent {
 					double acc,
 					double dec,
 					double vmax) {
-		super(id, env, road, initialPos, acc, dec, vmax);
+		super(id, env, road, initialPos, acc, dec, vmax, null, null, null);
 		state = CarAgentState.STOPPED;
 	}
 

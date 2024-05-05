@@ -33,6 +33,7 @@ public class BarrierImpl implements Barrier {
       while(sim.isStopped()) {
         // Wait
       }
+      System.out.println(nWait);
       if (nWait < nThreads) {
         do {
           cond.await();

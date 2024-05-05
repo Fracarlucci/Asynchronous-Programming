@@ -18,7 +18,7 @@ public class ThreadManager {
     private final int nThreadsPerTrafficLights;
 
     private RoadsEnv env;
-    private List<AgentsThread> agentsThreads;
+    private List<CarAgent> agentsThreads;
     private List<TrafficLightsThread> trafficLightsThreads;
     private final Barrier stepBarrier;
     private final Barrier actBarrier;
@@ -39,7 +39,7 @@ public class ThreadManager {
         this.agentsThreads = new LinkedList<>();
         this.trafficLightsThreads = new LinkedList<>();
         this.env = env;
-        executor = Executors.newFixedThreadPool(nThreadsPerCars);
+        executor = Executors.newFixedThreadPool(nThreadsPerCars+1);
     }
 
     /**
@@ -51,6 +51,7 @@ public class ThreadManager {
     public void generateCars(List<CarAgent> carAgents, int dt) {
 
         this.agentsThreads.clear();
+        this.agentsThreads = carAgents;
         var iter = carAgents.iterator(); // Iterator of cars.
 //        final int carsPerThread = carAgents.size() / nThreadsPerCars;
 //        int remainingCars = carAgents.size() % nThreadsPerCars;
@@ -109,12 +110,11 @@ public class ThreadManager {
      * @param dt
      */
     public void startThreads(int dt) {
-//        agentsThreads.forEach(ca -> {
-        for (int i = 0; i < 1_000; i++) {
-            executor.submit(new AgentsThread(actBarrier, stepBarrier, dt, sim, env));
-//            ca.initCars(env);
+        agentsThreads.forEach(ca -> {
+            ca.init(env, dt);
+            executor.submit(ca);
 //            ca.start();
-        }
+        });
 
         if (trafficLightsThreads != null) {
             trafficLightsThreads.forEach(tl -> {
@@ -132,6 +132,7 @@ public class ThreadManager {
             long startStepTime = 0;
 
             while (actualSteps < this.nSteps) {
+                System.out.println("MAIN THREAD: Entra nella barrier");
                 this.stepBarrier.waitBefore(sim);
 
                 if (startStepTime != 0) {
@@ -146,6 +147,7 @@ public class ThreadManager {
                 }
                 actualSteps++;
                 startStepTime = System.currentTimeMillis();
+                System.out.println("STEPS: " + actualSteps);
             }
             this.stepBarrier.waitBefore(sim);
             timePerStep += System.currentTimeMillis() - startStepTime;
