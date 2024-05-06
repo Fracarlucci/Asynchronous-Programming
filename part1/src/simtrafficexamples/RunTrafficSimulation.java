@@ -13,8 +13,8 @@ public class RunTrafficSimulation {
 
 //	 	var simulation = new TrafficSimulationSingleRoadTwoCars(2);
 //		var simulation = new TrafficSimulationSingleRoadSeveralCars(30);
-		var simulation = new TrafficSimulationSingleRoadWithTrafficLightTwoCars(2);
-//		var simulation = new TrafficSimulationWithCrossRoads(nThreads);
+//		var simulation = new TrafficSimulationSingleRoadWithTrafficLightTwoCars(2);
+		var simulation = new TrafficSimulationWithCrossRoads(4);
 		simulation.setup();
 
 		RoadSimStatistics stat = new RoadSimStatistics();

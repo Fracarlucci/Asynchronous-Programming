@@ -14,9 +14,6 @@ import java.util.concurrent.*;
  */
 public class ThreadManager {
 
-    private final int nThreadsPerCars;
-    private final int nThreadsPerTrafficLights;
-
     private RoadsEnv env;
     private List<CarAgent> carAgents;
     private List<TrafficLight> trafficLights;
@@ -31,8 +28,6 @@ public class ThreadManager {
 
 
     public ThreadManager(int nThreadsPerCars, int nThreadsPerTrafficLights, AbstractSimulation sim, RoadsEnv env) {
-        this.nThreadsPerCars = nThreadsPerCars;
-        this.nThreadsPerTrafficLights = nThreadsPerTrafficLights;
         this.stepBarrier = new BarrierImpl(nThreadsPerCars + nThreadsPerTrafficLights + 1);
         this.actBarrier = new BarrierImpl(nThreadsPerCars + nThreadsPerTrafficLights);
         this.sim = sim;
@@ -52,30 +47,6 @@ public class ThreadManager {
 
         this.carAgents.clear();
         this.carAgents = carAgents;
-        var iter = carAgents.iterator(); // Iterator of cars.
-//        final int carsPerThread = carAgents.size() / nThreadsPerCars;
-//        int remainingCars = carAgents.size() % nThreadsPerCars;
-
-        /*for (int i = 0; i < 1_000; i++) {
-            try {
-
-                agentsThreads.add(at);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
-
-        /*for (int i = 0; i < nThreadsPerCars; i++) {
-
-            AgentsThread at = new AgentsThread(actBarrier, stepBarrier, dt, sim);
-
-            IntStream.range(0, carsPerThread).forEach(j -> at.addCar(iter.next()));
-
-            if (remainingCars > 0) {
-                remainingCars--;
-                at.addCar(iter.next());
-            }
-        }*/
     }
 
     /**
@@ -87,22 +58,6 @@ public class ThreadManager {
     public void generateTrafficLight(List<TrafficLight> trafficLights, int dt) {
         this.trafficLights.clear();
         this.trafficLights = trafficLights;
-        final var iter = trafficLights.iterator();
-//        final int trafficLightsPerThread = trafficLights.size() / this.nThreadsPerTrafficLights;
-//        int remainingTrafficLights = trafficLights.size() % this.nThreadsPerTrafficLights;
-//
-//        for (int i = 0; i < nThreadsPerTrafficLights; i++) {
-//
-//            TrafficLightsThread tlt = new TrafficLightsThread(actBarrier, stepBarrier, sim, dt);
-//            this.trafficLightsThreads.add(tlt);
-//
-//            IntStream.range(0, trafficLightsPerThread).forEach(j -> tlt.addTrafficLight(iter.next()));
-//
-//            if (remainingTrafficLights > 0) {
-//                remainingTrafficLights--;
-//                tlt.addTrafficLight(iter.next());
-//            }
-//        }
     }
     /**
      * Start the agents' threads

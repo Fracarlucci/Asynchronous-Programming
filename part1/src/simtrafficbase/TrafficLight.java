@@ -20,10 +20,11 @@ public class TrafficLight implements Runnable {
 	private final Barrier actBarrier;   // Barrier before doing an action.
 	private final Barrier stepBarrier;  // Barrier before doing next step.
 	private final AbstractSimulation simulation;  // Barrier before doing next step.
+	private final int dt;
 
 
 	public TrafficLight(P2d pos, TrafficLightState initialState, int greenDuration, int yellowDuration, int redDuration,
-						Barrier actBarrier, Barrier stepBarrier, AbstractSimulation simulation) {
+						Barrier actBarrier, Barrier stepBarrier, AbstractSimulation simulation, int dt) {
 		this.redDuration = redDuration;
 		this.greenDuration = greenDuration;
 		this.yellowDuration = yellowDuration;
@@ -32,6 +33,7 @@ public class TrafficLight implements Runnable {
 		this.actBarrier = actBarrier;
 		this.stepBarrier = stepBarrier;
 		this.simulation = simulation;
+		this.dt = dt;
 	}
 
 	public void init() {
@@ -48,8 +50,8 @@ public class TrafficLight implements Runnable {
 	}
 
 	public void semaphoreStep() {
+		this.step(this.dt);
 		actBarrier.waitBefore(simulation);
-		System.out.println("SEMAPHORE WAIT");
 		actBarrier.waitBefore(simulation);
 	}
 
