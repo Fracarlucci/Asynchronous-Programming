@@ -28,7 +28,7 @@ public class TrafficSimulationWithCrossRoads extends AbstractSimulation {
 
 		this.setupEnvironment(env);
 
-		TrafficLight tl1 = env.createTrafficLight(new P2d(740,300), TrafficLight.TrafficLightState.GREEN, 75, 25, 100);
+		TrafficLight tl1 = env.createTrafficLight(new P2d(740,300), TrafficLight.TrafficLightState.GREEN, 75, 25, 100, threadManager, this);
 
 		Road r1 = env.createRoad(new P2d(0,300), new P2d(1500,300));
 		r1.addTrafficLight(tl1, 740);
@@ -39,7 +39,8 @@ public class TrafficSimulationWithCrossRoads extends AbstractSimulation {
 		CarAgent car2 = new CarAgentExtended("car-2", env, r1, 100, 0.1, 0.3, 5);
 		this.addAgent(car2);
 
-		TrafficLight tl2 = env.createTrafficLight(new P2d(750,290),  TrafficLight.TrafficLightState.RED, 75, 25, 100);
+		TrafficLight tl2 = env.createTrafficLight(new P2d(750,290),  TrafficLight.TrafficLightState.RED, 75, 25, 100, threadManager, this
+		);
 
 		Road r2 = env.createRoad(new P2d(750,0), new P2d(750,600));
 		r2.addTrafficLight(tl2, 290);

@@ -42,13 +42,14 @@ public class TrafficLight implements Runnable {
 	@Override
 	public void run() {
 		while(true) {
-			stepBarrier.waitBefore(sim); // TODO:sim
-			this.step();
+			stepBarrier.waitBefore(simulation);
+			this.semaphoreStep();
 		}
 	}
 
-	public void step() {
+	public void semaphoreStep() {
 		actBarrier.waitBefore(simulation);
+		System.out.println("SEMAPHORE WAIT");
 		actBarrier.waitBefore(simulation);
 	}
 

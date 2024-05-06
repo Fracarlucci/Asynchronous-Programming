@@ -18,8 +18,8 @@ public class ThreadManager {
     private final int nThreadsPerTrafficLights;
 
     private RoadsEnv env;
-    private List<CarAgent> agentsThreads;
-    private List<TrafficLightsThread> trafficLightsThreads;
+    private List<CarAgent> carAgents;
+    private List<TrafficLight> trafficLights;
     private final Barrier stepBarrier;
     private final Barrier actBarrier;
     private final AbstractSimulation sim;
@@ -36,10 +36,10 @@ public class ThreadManager {
         this.stepBarrier = new BarrierImpl(nThreadsPerCars + nThreadsPerTrafficLights + 1);
         this.actBarrier = new BarrierImpl(nThreadsPerCars + nThreadsPerTrafficLights);
         this.sim = sim;
-        this.agentsThreads = new LinkedList<>();
-        this.trafficLightsThreads = new LinkedList<>();
+        this.carAgents = new LinkedList<>();
+        this.trafficLights = new LinkedList<>();
         this.env = env;
-        executor = Executors.newFixedThreadPool(nThreadsPerCars+1);
+        executor = Executors.newFixedThreadPool(nThreadsPerCars+nThreadsPerTrafficLights);
     }
 
     /**
@@ -50,8 +50,8 @@ public class ThreadManager {
      */
     public void generateCars(List<CarAgent> carAgents, int dt) {
 
-        this.agentsThreads.clear();
-        this.agentsThreads = carAgents;
+        this.carAgents.clear();
+        this.carAgents = carAgents;
         var iter = carAgents.iterator(); // Iterator of cars.
 //        final int carsPerThread = carAgents.size() / nThreadsPerCars;
 //        int remainingCars = carAgents.size() % nThreadsPerCars;
@@ -85,41 +85,40 @@ public class ThreadManager {
      * @param dt
      */
     public void generateTrafficLight(List<TrafficLight> trafficLights, int dt) {
-        this.trafficLightsThreads.clear();
+        this.trafficLights.clear();
+        this.trafficLights = trafficLights;
         final var iter = trafficLights.iterator();
-        final int trafficLightsPerThread = trafficLights.size() / this.nThreadsPerTrafficLights;
-        int remainingTrafficLights = trafficLights.size() % this.nThreadsPerTrafficLights;
-
-        for (int i = 0; i < nThreadsPerTrafficLights; i++) {
-
-            TrafficLightsThread tlt = new TrafficLightsThread(actBarrier, stepBarrier, sim, dt);
-            this.trafficLightsThreads.add(tlt);
-
-            IntStream.range(0, trafficLightsPerThread).forEach(j -> tlt.addTrafficLight(iter.next()));
-
-            if (remainingTrafficLights > 0) {
-                remainingTrafficLights--;
-                tlt.addTrafficLight(iter.next());
-            }
-        }
+//        final int trafficLightsPerThread = trafficLights.size() / this.nThreadsPerTrafficLights;
+//        int remainingTrafficLights = trafficLights.size() % this.nThreadsPerTrafficLights;
+//
+//        for (int i = 0; i < nThreadsPerTrafficLights; i++) {
+//
+//            TrafficLightsThread tlt = new TrafficLightsThread(actBarrier, stepBarrier, sim, dt);
+//            this.trafficLightsThreads.add(tlt);
+//
+//            IntStream.range(0, trafficLightsPerThread).forEach(j -> tlt.addTrafficLight(iter.next()));
+//
+//            if (remainingTrafficLights > 0) {
+//                remainingTrafficLights--;
+//                tlt.addTrafficLight(iter.next());
+//            }
+//        }
     }
-
     /**
      * Start the agents' threads
      *
      * @param dt
      */
     public void startThreads(int dt) {
-        agentsThreads.forEach(ca -> {
+        carAgents.forEach(ca -> {
             ca.init(env, dt);
             executor.submit(ca);
-//            ca.start();
         });
 
-        if (trafficLightsThreads != null) {
-            trafficLightsThreads.forEach(tl -> {
+        if (trafficLights != null) {
+            trafficLights.forEach(tl -> {
                 tl.init();
-                tl.start();
+                executor.submit(tl);
             });
         }
 
