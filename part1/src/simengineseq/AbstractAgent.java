@@ -28,8 +28,9 @@ public abstract class AbstractAgent {
 	 * 
 	 * @param env
 	 */
-	 public void init(AbstractEnvironment env) {
+	 public void init(AbstractEnvironment env, int dt) {
 		this.env = env;
+		this.dt = dt;
 	}
 
 	public  String getAgentId() {

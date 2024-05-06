@@ -56,7 +56,7 @@ public class TrafficSimulationSingleRoadSeveralCars extends AbstractSimulation {
 					initialPos,
 					carAcceleration,
 					carDeceleration,
-					carMaxSpeed);
+					carMaxSpeed, threadManager.getActBarrier(), threadManager.getStepBarrier(), this);
 			this.addAgent(car);
 			cars.add(car);
 		}

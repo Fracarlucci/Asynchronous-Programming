@@ -34,7 +34,7 @@ public abstract class AbstractSimulation {
   private long startWallTime;
   private long endWallTime;
   private long averageTimePerStep;
-  private volatile Boolean stop = false;
+  private volatile Boolean stop = true;
   private GUIMonitor monitor = new GUIMonitor();
 
   protected AbstractSimulation() {

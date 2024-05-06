@@ -32,9 +32,9 @@ public class TrafficSimulationSingleRoadTwoCars extends AbstractSimulation {
 
 		this.setupEnvironment(env);
 		Road r = env.createRoad(new P2d(0,300), new P2d(1500,300));
-		CarAgent car1 = new CarAgentBasic("car-1", env, r,0, 0.1, 0.2, 8);
+		CarAgent car1 = new CarAgentBasic("car-1", env, r,0, 0.1, 0.2, 8, threadManager.getActBarrier(), threadManager.getStepBarrier(), this);
 		this.addAgent(car1);
-		CarAgent car2 = new CarAgentBasic("car-2", env, r,100, 0.1, 0.1, 7);
+		CarAgent car2 = new CarAgentBasic("car-2", env, r,100, 0.1, 0.1, 7, threadManager.getActBarrier(), threadManager.getStepBarrier(), this);
 		this.addAgent(car2);
 
 		/* sync with wall-time: 25 steps per sec */

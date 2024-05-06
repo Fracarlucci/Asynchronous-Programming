@@ -1,13 +1,15 @@
 package pcd.ass01.simtrafficbase;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
+import pcd.ass01.simengineconcur.Barrier;
 import pcd.ass01.simengineseq.*;
 
 /**
  * Base class modeling the skeleton of an agent modeling a car in the traffic environment
  */
-public abstract class CarAgent extends AbstractAgent {
+public abstract class CarAgent extends AbstractAgent implements Runnable {
 
   /* car model */
   protected double maxSpeed;
@@ -19,16 +21,23 @@ public abstract class CarAgent extends AbstractAgent {
   protected CarPercept currentPercept;
   protected Optional<Action> selectedAction;
 
+  private final Barrier actBarrier;   // Barrier before doing an action.
+  private final Barrier stepBarrier;  // Barrier before doing next step.
+  private final AbstractSimulation simulation;  // Barrier before doing next step.
+
 
   public CarAgent(String id, RoadsEnv env, Road road,
                   double initialPos,
                   double acc,
                   double dec,
-                  double vmax) {
+                  double vmax, Barrier actBarrier, Barrier stepBarrier, AbstractSimulation simulation) {
     super(id);
     this.acceleration = acc;
     this.deceleration = dec;
     this.maxSpeed = vmax;
+    this.actBarrier = actBarrier;
+    this.stepBarrier = stepBarrier;
+    this.simulation = simulation;
     env.registerNewCar(this, road, initialPos);
   }
 
@@ -63,9 +72,27 @@ public abstract class CarAgent extends AbstractAgent {
     return currentSpeed;
   }
 
+  @Override
+  public void run() {
+      while (true) {
+        log("Si avvia il ciclo");
+        stepBarrier.waitBefore(simulation);
+        log("Si sveglia");
+        this.step();
+      }
+  }
   protected void log(String msg) {
     System.out.println("[CAR " + this.getAgentId() + "] " + msg);
   }
 
 
+  public void step() {
+    actBarrier.waitBefore(simulation);
+    log("Decide");
+    this.senseAndDecide(getDt());
+    actBarrier.waitBefore(simulation);
+    log("Act");
+    this.act();
+    log("" +this.currentSpeed);
+  }
 }
