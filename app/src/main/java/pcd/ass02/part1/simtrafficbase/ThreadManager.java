@@ -40,7 +40,6 @@ public class ThreadManager {
      * Generate the threads for the cars
      *
      * @param carAgents
-     * @param dt
      */
     public void generateCars(List<CarAgent> carAgents) {
         this.carAgents.clear();
@@ -51,7 +50,6 @@ public class ThreadManager {
      * Generate the threads for the traffic lights
      *
      * @param trafficLights
-     * @param dt
      */
     public void generateTrafficLight(List<TrafficLight> trafficLights) {
         this.trafficLights.clear();
