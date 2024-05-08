@@ -2,14 +2,23 @@ package pcd.ass02.part2.test;
 
 import pcd.ass02.part2.lib.WordOccurrences;
 import pcd.ass02.part2.lib.WordOccurrencesEventLoop;
-import pcd.ass02.part2.lib.WordOccurrencesReactive;
-import pcd.ass02.part2.lib.WordOccurrencesVirtualThread;
+
+import java.io.IOException;
+import java.util.Map;
 
 public class TestWordOccurences {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        final WordOccurrences wordOccurrencesEventLoop = new WordOccurrencesEventLoop();
-        final WordOccurrences wordOccurrencesVirtualThread = new WordOccurrencesVirtualThread();
-        final WordOccurrences wordOccurrencesReactive = new WordOccurrencesReactive();
+        final String webAddress = "https://en.wikipedia.org/";
+        final String wordToFind = "wikipedia";
+        final int depth = 1;
+
+        final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop();
+//        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
+//        final WordOccurrences wordOccReactive = new WordOccurrencesReactive();
+
+        final Map<String, Integer> report = wordOccEventLoop.getWordOccurences(webAddress, wordToFind, depth);
+
+        report.forEach((k,v) -> System.out.println(k + " has " + v + " occurrences of \"" + wordToFind + "\""));
     }
 }

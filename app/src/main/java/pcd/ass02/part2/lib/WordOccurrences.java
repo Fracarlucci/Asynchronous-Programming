@@ -1,5 +1,6 @@
 package pcd.ass02.part2.lib;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -18,5 +19,5 @@ public interface WordOccurrences {
      * @return a map whose keys are the names of the pages where the word was
      * found and whose values are the number of occurrences of the word on that page
      */
-    Map<String, Integer> getWordOccurences(String webAddress, String wordToFind, int depth);
+    Map<String, Integer> getWordOccurences(String webAddress, String wordToFind, int depth) throws IOException;
 }
