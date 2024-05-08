@@ -9,9 +9,9 @@ import java.util.Map;
 public class TestWordOccurences {
     public static void main(String[] args) throws IOException {
 
-        final String webAddress = "https://it.wikipedia.org/wiki/Pagina_principale";
-        final String wordToFind = "pizzeria";
-        final int depth = 3;
+        final String webAddress = "https://fracarlucci.github.io/RancorRank/";
+        final String wordToFind = "hello";
+        final int depth = 5;
 
         final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
@@ -19,6 +19,11 @@ public class TestWordOccurences {
 
         final Map<String, Integer> report = wordOccEventLoop.getWordOccurences(webAddress, wordToFind, depth);
 
-        report.forEach((k,v) -> System.out.println(k + " has " + v + " occurrences of \"" + wordToFind + "\""));
+        System.out.println("*************** REPORT ***************");
+        System.out.println("Occurrences of \"" + wordToFind + "\" : link");
+
+        report.forEach((k,v) -> System.out.println(v + " : " + k));
+        System.out.println("Viewed links: " + report.keySet().size());
+        System.out.println("Words found: " + report.values().stream().mapToInt(Integer::intValue).sum());
     }
 }
