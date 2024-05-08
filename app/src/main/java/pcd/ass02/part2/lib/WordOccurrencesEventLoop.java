@@ -13,27 +13,30 @@ public class WordOccurrencesEventLoop implements WordOccurrences {
 
     private String wordToFind;
     private final Map<String, Integer> map = new HashMap<>();
-    private final Set<String> pageLinks = new HashSet<>(); // OR LIST
+    private final Set<String> pageLinks = new HashSet<>();
+//    private final List<String> pageLinks = new LinkedList<>();
     Document doc;
 
     @Override
     public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
         this.wordToFind = wordToFind;
         pageLinks.add(webAddress);
+        Set<String> foundLinks = new HashSet<>();
 
         for (int i = 0; i <= depth; i++) {
             pageLinks.iterator().forEachRemaining(l -> {
+//                System.out.println(l);
                 try {
-                    if (l.startsWith("http")) {
+                    if (l.startsWith("http") && !map.containsKey(l)) {
                         doc = findWord(l);
+                        foundLinks.addAll(findLinks(doc));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
-            if (i < depth) {
-                findLinks(doc);
-            }
+            pageLinks.clear();
+            pageLinks.addAll(foundLinks);
         }
         return map;
     }
@@ -71,9 +74,11 @@ public class WordOccurrencesEventLoop implements WordOccurrences {
      *
      * @param doc html document in which to search for the links
      */
-    private void findLinks(Document doc) {
-        pageLinks.clear();
-        Elements links = doc.getElementsByTag("a");
-        links.forEach(l -> pageLinks.add(l.attr("href")));
+    private Set<String> findLinks(Document doc) {
+        final Set<String> foundLinks = new HashSet<>();
+        final Elements links = doc.getElementsByTag("a");
+
+        links.forEach(l -> foundLinks.add(l.attr("href")));
+        return foundLinks;
     }
 }

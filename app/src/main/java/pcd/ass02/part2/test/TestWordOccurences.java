@@ -2,16 +2,14 @@ package pcd.ass02.part2.test;
 
 import pcd.ass02.part2.lib.WordOccurrences;
 import pcd.ass02.part2.lib.WordOccurrencesEventLoop;
-
-import java.io.IOException;
 import java.util.Map;
 
 public class TestWordOccurences {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-        final String webAddress = "https://fracarlucci.github.io/RancorRank/";
+        final String webAddress = "http://bias.csr.unibo.it/maltoni/ml/";
         final String wordToFind = "hello";
-        final int depth = 5;
+        final int depth = 1;
 
         final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
