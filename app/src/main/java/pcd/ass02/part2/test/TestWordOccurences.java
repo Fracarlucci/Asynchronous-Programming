@@ -9,9 +9,9 @@ import java.util.Map;
 public class TestWordOccurences {
     public static void main(String[] args) throws IOException {
 
-        final String webAddress = "https://en.wikipedia.org/";
-        final String wordToFind = "wikipedia";
-        final int depth = 1;
+        final String webAddress = "https://it.wikipedia.org/wiki/Pagina_principale";
+        final String wordToFind = "pizzeria";
+        final int depth = 3;
 
         final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
