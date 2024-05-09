@@ -7,12 +7,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class WordFinder {
 
@@ -23,6 +20,11 @@ public class WordFinder {
     private final Document doc;
 
 
+    /**
+     * @param webAddress where to find the word
+     * @return the html document
+     * @throws IOException if there are errors reading the web page
+     */
     public WordFinder(String wordToFind, String webAddress) throws IOException {
         this.wordToFind = wordToFind;
         this.webAddress = webAddress;
@@ -50,11 +52,11 @@ public class WordFinder {
     }
 
     public Set<String> findLinks() {
-        final Set<String> foundLinks = new HashSet<>();
-        final Elements links = doc.getElementsByTag("a");
-
-        links.forEach(l -> foundLinks.add(l.attr("href")));
-        return foundLinks;
+        return doc.getElementsByTag("a")
+                .stream()
+                .map(l -> l.attr("href"))
+                .filter(l -> l.startsWith("http"))
+                .collect(Collectors.toSet());
     }
 
     public String getWebAddress() {

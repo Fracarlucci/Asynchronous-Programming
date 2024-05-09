@@ -20,6 +20,7 @@ public class WordFinderThread extends Thread {
         this.wordFinders.add(wordFinder);
     }
 
+    @Override
     public void run() {
         for (WordFinder finder : wordFinders) {
             counter = finder.findWord(wordToFind);
