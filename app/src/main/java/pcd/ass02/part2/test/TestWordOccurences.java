@@ -1,15 +1,18 @@
 package pcd.ass02.part2.test;
 
 import pcd.ass02.part2.lib.WordOccurrences;
-import pcd.ass02.part2.lib.WordOccurrencesEventLoop;
+import pcd.ass02.part2.lib.EventLoop.WordOccurrencesEventLoop;
+
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class TestWordOccurences {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
         final String webAddress = "http://bias.csr.unibo.it/maltoni/ml/";
         final String wordToFind = "hello";
-        final int depth = 1;
+        final int depth = 2;
         final int nThreads = Runtime.getRuntime().availableProcessors();
 
         final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop(nThreads);

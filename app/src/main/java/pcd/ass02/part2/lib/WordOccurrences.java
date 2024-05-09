@@ -20,5 +20,5 @@ public interface WordOccurrences {
      * @return a map whose keys are the names of the pages where the word was
      * found and whose values are the number of occurrences of the word on that page
      */
-    Map<String, Integer> getWordOccurences(String webAddress, String wordToFind, int depth) throws ExecutionException, InterruptedException;
+    Map<String, Integer> getWordOccurences(String webAddress, String wordToFind, int depth) throws ExecutionException, InterruptedException, IOException;
 }
