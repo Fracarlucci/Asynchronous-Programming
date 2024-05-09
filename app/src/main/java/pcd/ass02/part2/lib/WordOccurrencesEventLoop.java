@@ -7,25 +7,57 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class WordOccurrencesEventLoop implements WordOccurrences {
 
+    private final int nThreads;
+    private int counter = 0;
     private String wordToFind;
     private final Map<String, Integer> map = new HashMap<>();
     private final Set<String> pageLinks = new HashSet<>();
-//    private final List<String> pageLinks = new LinkedList<>();
+    //    private final List<String> pageLinks = new LinkedList<>();
     Document doc;
+    private final List<WordFinderThread> wordFinderThreads;
+
+    public WordOccurrencesEventLoop(int nThreads) {
+        this.wordFinderThreads = new LinkedList<>();
+        this.nThreads = nThreads;
+    }
+
+    public void generateWordFinders(Set<String> webAddresses) {
+        this.wordFinderThreads.clear();
+        var iterator = webAddresses.iterator();
+        final int webAddrPerThread = webAddresses.size() / nThreads;
+        int remainingWebAddr = webAddresses.size() % nThreads;
+
+        for (int i = 0; i < nThreads; i++) {
+
+            WordFinderThread wf = new WordFinderThread(wordToFind);
+            wordFinderThreads.add(wf);
+
+            IntStream.range(0, webAddrPerThread).forEach(j -> wf.addWordFinder(new WordFinder(wordToFind, iterator.next())));
+
+            if (remainingWebAddr > 0) {
+                remainingWebAddr--;
+                wf.addWordFinder(new WordFinder(wordToFind, iterator.next()));
+            }
+        }
+    }
 
     @Override
-    public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
+    public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) throws ExecutionException, InterruptedException {
         this.wordToFind = wordToFind;
         pageLinks.add(webAddress);
         Set<String> foundLinks = new HashSet<>();
 
         for (int i = 0; i <= depth; i++) {
+            this.generateWordFinders(pageLinks);
+
             pageLinks.iterator().forEachRemaining(l -> {
-//                System.out.println(l);
                 try {
                     if (l.startsWith("http") && !map.containsKey(l)) {
                         doc = findWord(l);
@@ -42,7 +74,6 @@ public class WordOccurrencesEventLoop implements WordOccurrences {
     }
 
     /**
-     *
      * @param webAddress where to find the word
      * @return the html document
      * @throws IOException if there are errors reading the web page
@@ -58,7 +89,7 @@ public class WordOccurrencesEventLoop implements WordOccurrences {
                     String[] words = element.ownText().split("[\\s\\p{Punct}]+");
                     for (String word : words) {
                         if (word.equalsIgnoreCase(wordToFind)) {
-                            counter++;
+                            counter++; //monitor.write
                         }
                     }
                 }
@@ -71,14 +102,20 @@ public class WordOccurrencesEventLoop implements WordOccurrences {
     }
 
     /**
-     *
      * @param doc html document in which to search for the links
      */
     private Set<String> findLinks(Document doc) {
         final Set<String> foundLinks = new HashSet<>();
         final Elements links = doc.getElementsByTag("a");
 
-        links.forEach(l -> foundLinks.add(l.attr("href")));
-        return foundLinks;
+//        links.forEach(l -> foundLinks.add(l.attr("href")));
+//        foundLinks.stream().filter(l -> l.startsWith("http"));
+//        return foundLinks;
+
+        return links.stream()
+                .map(l -> l.attr("href"))  // Get the href attribute of each element
+                .filter(l -> l.startsWith("http"))  // Filter out links that start with "http"
+                .collect(Collectors.toSet());  // Collect the filtered links into a list
+
     }
 }
