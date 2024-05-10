@@ -1,5 +1,6 @@
 package pcd.ass02.part2.lib.virtualThread;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.Set;
@@ -9,18 +10,21 @@ import java.util.stream.Collectors;
 public class LinkFinderFuture implements Callable<Set<String>> {
 
   private final String webAddress;
-  private final Document doc;
+  private Document doc;
   private Set<String> links;
 
-  public LinkFinderFuture(String webAddress, Document doc) {
+  public LinkFinderFuture(String webAddress) {
     this.webAddress = webAddress;
-    this.doc = doc;
   }
 
   @Override
   public Set<String> call() throws Exception {
-
-    return Set.of();
+    try {
+      doc = Jsoup.connect(webAddress).get();
+    } catch (Exception e) {
+      System.out.println("Failed to connect to the website");
+    }
+    return findLinks();
   }
 
   private Set<String> findLinks() {
