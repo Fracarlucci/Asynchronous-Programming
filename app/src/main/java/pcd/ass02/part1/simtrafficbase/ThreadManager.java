@@ -82,7 +82,6 @@ public class ThreadManager {
             long startStepTime = 0;
 
             while (actualSteps < this.nSteps) {
-                System.out.println("MAIN THREAD: Entra nella barrier");
                 this.stepBarrier.waitBefore(sim);
 
                 if (startStepTime != 0) {
@@ -104,7 +103,7 @@ public class ThreadManager {
             totalTime = System.currentTimeMillis() - startWallTime;
             System.out.println("Finish: " + actualSteps);
             System.out.println("Completed in " + totalTime + "ms");
-
+            executor.shutdown();
         }).start();
     }
 

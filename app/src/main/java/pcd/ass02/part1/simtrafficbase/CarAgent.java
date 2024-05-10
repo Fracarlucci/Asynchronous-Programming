@@ -74,9 +74,7 @@ public abstract class CarAgent extends AbstractAgent implements Runnable {
   @Override
   public void run() {
       while (true) {
-//        log("Si avvia il ciclo");
         stepBarrier.waitBefore(simulation);
-//        log("Si sveglia");
         this.step();
       }
   }
@@ -87,11 +85,8 @@ public abstract class CarAgent extends AbstractAgent implements Runnable {
 
   public void step() {
     actBarrier.waitBefore(simulation);
-//    log("Decide");
     this.senseAndDecide(getDt());
     actBarrier.waitBefore(simulation);
-//    log("Act");
     this.act();
-    log("" +this.currentSpeed);
   }
 }
