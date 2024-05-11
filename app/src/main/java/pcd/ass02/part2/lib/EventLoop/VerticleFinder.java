@@ -34,17 +34,22 @@ public class VerticleFinder extends AbstractVerticle {
     }
 
     public void start(final Promise<Void> promise) throws IOException {
-        pageLinks.add(webAddress);
+        try {
+            pageLinks.add(webAddress);
 
-        log("START");
-        this.getVertx().eventBus().consumer("word-found", message -> {
-            computeWordFound(message.body().toString(), promise);
-        });
+            log("START");
+            this.getVertx().eventBus().consumer("word-found", message -> {
+                computeWordFound(message.body().toString(), promise);
+            });
 
-        this.getVertx().eventBus().consumer("links-found", message -> {
-            addLinks((Set<String>) message.body(), promise);
-        });
-        findWord(webAddress, promise);
+            this.getVertx().eventBus().consumer("links-found", message -> {
+                addLinks((Set<String>) message.body(), promise);
+            });
+            findWord(webAddress, promise);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
     }
 
     private void addLinks(final Set<String> newLinks, final Promise<Void> promise) {
