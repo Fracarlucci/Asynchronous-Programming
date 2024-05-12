@@ -5,9 +5,9 @@ import pcd.ass02.part2.lib.EventLoop.WordOccurrencesEventLoop;
 public class TestWordOccurrences {
     public static void main(String[] args) {
 
-        final String webAddress = "https://virtuale.unibo.it"; // https://fracarlucci.github.io/RancorRank
-        final String wordToFind = "bologna";
-        final int depth = 3;
+        final String webAddress = "https://www.riminitoday.it/"; // https://fracarlucci.github.io/RancorRank
+        final String wordToFind = "romagna";
+        final int depth = 2;
 
         final WordOccurrencesEventLoop wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
