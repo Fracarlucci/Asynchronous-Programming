@@ -11,8 +11,8 @@ import java.util.concurrent.ExecutionException;
 public class TestWordOccurences {
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
-        final String webAddress = "https://www.pizzeria-corso.it/";
-        final String wordToFind = "pizza";
+        final String webAddress = "https://virtuale.unibo.it/";
+        final String wordToFind = "virtuale";
         final int depth = 2;
         final int nThreads = Runtime.getRuntime().availableProcessors();
 

@@ -87,8 +87,10 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
     wordFutureList.forEach(future -> {
       try {
         final Map.Entry<String, Integer> entry = future.get();
-        System.out.println("Future n. " + future + ": " + entry.getValue());
-        map.put(entry.getKey(), entry.getValue());
+        if (entry.getValue() != 0) {
+          System.out.println("Future n. " + future + ": " + entry.getValue());
+          map.put(entry.getKey(), entry.getValue());
+        }
       } catch (InterruptedException | ExecutionException e) {
         throw new RuntimeException(e);
       }
