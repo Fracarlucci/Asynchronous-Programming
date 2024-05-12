@@ -63,12 +63,14 @@ public class ThreadManager {
     public void startThreads(int dt) {
         carAgents.forEach(ca -> {
             ca.init(env, dt);
+            // Submit the carAgent
             executor.submit(ca);
         });
 
         if (trafficLights != null) {
             trafficLights.forEach(tl -> {
                 tl.init();
+                // Submit the trafficLights
                 executor.submit(tl);
             });
         }
@@ -103,6 +105,7 @@ public class ThreadManager {
             totalTime = System.currentTimeMillis() - startWallTime;
             System.out.println("Finish: " + actualSteps);
             System.out.println("Completed in " + totalTime + "ms");
+            // shutdown threads when is finished
             executor.shutdown();
         }).start();
     }
