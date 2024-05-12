@@ -7,7 +7,7 @@ public class TestWordOccurrences {
 
         final String webAddress = "https://www.riminitoday.it/"; // https://fracarlucci.github.io/RancorRank
         final String wordToFind = "romagna";
-        final int depth = 2;
+        final int depth = 3;
 
         final WordOccurrencesEventLoop wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread();
