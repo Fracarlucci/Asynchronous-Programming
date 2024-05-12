@@ -39,6 +39,8 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
     pageLinks.add(webAddress);
     final List<Future<Map.Entry<String, Integer>>> wordFutureList = new ArrayList<>();
     final List<Future<Set<String>>> linkFutureList = new ArrayList<>();
+    final Set<String> failedPages = new HashSet<>();
+    Set<String> availablePages;
     Set<String> foundLinks = new HashSet<>();
 
 
@@ -46,7 +48,11 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
       final ExecutorService executor = Executors.newFixedThreadPool(pageLinks.size());
 
       pageLinks.forEach(page -> {
-        linkFutureList.add(executor.submit(new LinkFinderFuture(page)));
+        try {
+          linkFutureList.add(executor.submit(new LinkFinderFuture(page)));
+        } catch (Exception e) {
+          failedPages.add(page);
+        }
       });
 
       linkFutureList.forEach(future -> {
@@ -59,18 +65,6 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
         }
       });
 
-//      pageLinks.iterator().forEachRemaining(l -> {
-//        try {
-//
-//          if (!map.containsKey(l)) {
-//            doc = Jsoup.connect(l).get();
-//            foundLinks.addAll(findLinks());
-//            map.put(l, 0);
-//          }
-//        } catch (IOException e) {
-//          System.out.println("A website failed to connect");
-//        }
-//      });
       pageLinks.clear();
       pageLinks.addAll(foundLinks);
       executor.shutdown();
@@ -78,9 +72,10 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
 
     // I need to add again the first address because pageLink.clear() delete it
     pageLinks.add(webAddress);
-    final ExecutorService executor = Executors.newFixedThreadPool(pageLinks.size());
+    availablePages = pageLinks.stream().filter(l -> !failedPages.contains(l)).collect(Collectors.toSet());
+    final ExecutorService executor = Executors.newFixedThreadPool(availablePages.size());
 
-    pageLinks.forEach(page -> {
+    availablePages.forEach(page -> {
       wordFutureList.add(executor.submit(new WordFinderFuture(wordToFind, page, doc)));
     });
 
