@@ -12,9 +12,9 @@ import java.util.concurrent.ExecutionException;
 public class TestWordOccurences {
   public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
-    final String webAddress = "https://servizi.comune.cesena.fc.it/applicazioniweb/bacheca_informagiovani/";
-    final String wordToFind = "cesena";
-    final int depth = 2;
+    final String webAddress = "https://www.riminitoday.it/";
+    final String wordToFind = "romagna";
+    final int depth = 1;
     final int nThreads = Runtime.getRuntime().availableProcessors();
 
 //        final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop(nThreads);
