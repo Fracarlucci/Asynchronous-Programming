@@ -27,12 +27,14 @@ public class VerticleFinder extends AbstractVerticle {
     private int pageToVisit = 1;
     private final String wordToFind;
     private final Consumer<Map<String, Integer>> result;
+    private final boolean isStopped;
 
-    public VerticleFinder(final String webAddress, final String wordToFind, final int depth, Consumer<Map<String, Integer>> result) {
+    public VerticleFinder(final String webAddress, final String wordToFind, final int depth, final boolean isStopped, Consumer<Map<String, Integer>> result) {
         this.wordToFind = wordToFind;
         this.depth = depth;
         this.webAddress = webAddress;
         this.result = result;
+        this.isStopped = isStopped;
     }
 
     public void start(final Promise<Void> promise) throws IOException {
@@ -56,6 +58,9 @@ public class VerticleFinder extends AbstractVerticle {
      */
     private void findWord(final String webAddress, final Promise<Void> promise, int actualDepth) throws IOException {
         Callable<Document> call = () -> {
+            if (this.isStopped) {
+                return null;
+            }
             try {
                 return Jsoup.connect(webAddress).get();
             } catch (Exception e) {

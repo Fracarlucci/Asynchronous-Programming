@@ -2,24 +2,18 @@ package pcd.ass02.part2.GUI;
 
 import io.vertx.core.Vertx;
 import pcd.ass02.part2.lib.EventLoop.VerticleFinder;
-import pcd.ass02.part2.lib.EventLoop.WordOccurrencesEventLoop;
-import pcd.ass02.part2.lib.WordOccurrences;
-import pcd.ass02.part2.lib.WordOccurrencesVirtualThread;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class WordOccurrencesGUI extends JFrame {
+    private boolean isStopped = true;
     private JTextField webAddress, wordToFind, depth;
     private JTextArea resultArea;
-    private JButton startButton;
+    private final JButton startButton;
     private JButton stopButton;
+    Vertx vertx;
 
     public WordOccurrencesGUI() {
         setTitle("Word Occurrences");
@@ -44,9 +38,12 @@ public class WordOccurrencesGUI extends JFrame {
 
         startButton = new JButton("Start");
         startButton.addActionListener(e -> {
+            vertx = Vertx.vertx();
+            resultArea.setText("");
             startButton.setText("Finding words...");
             startButton.setEnabled(false);
             stopButton.setEnabled(true);
+            this.isStopped = false;
             String webAddressText = webAddress.getText().isEmpty() ? "https://fracarlucci.github.io/RancorRank/" : webAddress.getText();
             String wordToFindText = wordToFind.getText().isEmpty() ? "hello" : wordToFind.getText();
             int depthText;
@@ -57,18 +54,11 @@ public class WordOccurrencesGUI extends JFrame {
                 return;
             }
 
-            final WordOccurrencesEventLoop wordOccEventLoop = new WordOccurrencesEventLoop();
-//            wordOccEventLoop.getWordOccurences(webAddressText, wordToFindText, depthText);
             Map<String, Integer> result = new HashMap<>();
-            Vertx vertx = Vertx.vertx();
-            vertx.deployVerticle(new VerticleFinder(webAddressText, wordToFindText, depthText, res -> {
-//                result.putAll(res);
+            vertx.deployVerticle(new VerticleFinder(webAddressText, wordToFindText, depthText, isStopped, res -> {
                 resultArea.setText(result.values().stream().mapToInt(Integer::intValue).sum() + " occurrences found\n");
                 result.putAll(res);
-//                System.out.println(result.values().stream().mapToInt(Integer::intValue).sum() + " occurrences found");
             })).onComplete(res -> {
-
-//            System.out.println("*************** REPORT ***************");
                 resultArea.append("\nOccurrences of \"" + wordToFindText + "\" : link\n");
 
                 result.forEach((k, v) -> resultArea.append(v + " : " + k + "\n"));
@@ -79,11 +69,21 @@ public class WordOccurrencesGUI extends JFrame {
                 startButton.setText("Words found!");
                 stopButton.setEnabled(false);
                 vertx.close();
+                startButton.setEnabled(true);
+                startButton.setText("Start");
+                stopButton.setEnabled(false);
+                stopButton.setText("Stop");
             });
         });
         stopButton = new JButton("Stop");
+        stopButton.setEnabled(false);
         stopButton.addActionListener(e -> {
-
+            startButton.setEnabled(true);
+            startButton.setText("Start");
+            stopButton.setEnabled(false);
+            stopButton.setText("Stop");
+            this.isStopped = true;
+            vertx.close();
         });
         inputPanel.add(startButton);
         inputPanel.add(stopButton);

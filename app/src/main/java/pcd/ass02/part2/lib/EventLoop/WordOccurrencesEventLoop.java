@@ -9,7 +9,7 @@ public class WordOccurrencesEventLoop extends AbstractVerticle {
     private final Map<String, Integer> result = new HashMap<>();
 
     public void getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
-        Vertx.vertx().deployVerticle(new VerticleFinder(webAddress, wordToFind, depth, res -> {
+        Vertx.vertx().deployVerticle(new VerticleFinder(webAddress, wordToFind, depth, false, res -> {
                     result.putAll(res);
                     System.out.println(result.values().stream().mapToInt(Integer::intValue).sum() + " occurrences found");
                 }))
