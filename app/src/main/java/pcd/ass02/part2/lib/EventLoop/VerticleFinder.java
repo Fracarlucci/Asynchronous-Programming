@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class VerticleFinder extends AbstractVerticle {
     private final Set<String> pageLinks = new HashSet<>();
     private final int depth;
     private String webAddress;
-    private int actualDepth = 0;
+    private int pageToVisit = 1;
     private String wordToFind;
     private final Consumer<Map<String, Integer>> result;
 
@@ -34,79 +35,84 @@ public class VerticleFinder extends AbstractVerticle {
     }
 
     public void start(final Promise<Void> promise) throws IOException {
-        try {
-            pageLinks.add(webAddress);
-
-            log("START");
-            this.getVertx().eventBus().consumer("word-found", message -> {
-                computeWordFound(message.body().toString(), promise);
-            });
-
-            this.getVertx().eventBus().consumer("links-found", message -> {
-                addLinks((Set<String>) message.body(), promise);
-            });
-            findWord(webAddress, promise);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-    }
-
-    private void addLinks(final Set<String> newLinks, final Promise<Void> promise) {
-        this.pageLinks.clear();
-        this.pageLinks.addAll(newLinks);
-        pageLinks.forEach(pl -> {
-            try {
-                findWord(pl, promise);
-            } catch (IOException e) {
-                System.out.println("ERRORR");
-            }
+        int actualDepth = 0;
+        pageLinks.add(webAddress);
+        log("START");
+        this.getVertx().eventBus().consumer("word-found", message -> {
+            computeWordFound(message.body().toString(), promise);
         });
-        this.actualDepth++;
+        this.findWord(webAddress, promise, actualDepth);
     }
 
     private void computeWordFound(final String webAddress, final Promise<Void> promise) {
         this.map.put(webAddress, this.map.get(webAddress) == null ? 1 : this.map.get(webAddress) + 1);
+        result.accept(map);
     }
 
-     /*
+    /*
      * @param webAddress where to find the word
      * @return the html document
      * @throws IOException if there are errors reading the web page
      */
-    private void findWord(String webAddress, Promise<Void> promise) throws IOException {
-        try {
-            Document doc = Jsoup.connect(webAddress).timeout(2000).get();
-            Elements elements = doc.body().select("*");
-            for (Element element : elements) {
-                if (Pattern.compile(Pattern.quote(wordToFind), Pattern.CASE_INSENSITIVE).matcher(element.ownText()).find()) {
-                    String[] words = element.ownText().split("[\\s\\p{Punct}]+");
-                    for (String word : words) {
-                        if (word.equalsIgnoreCase(wordToFind)) {
-                            vertx.eventBus().publish("word-found", webAddress);
+    private void findWord(String webAddress, Promise<Void> promise, int actualDepth) throws IOException {
+        Callable<Document> call = () -> {
+            try {
+                return Jsoup.connect(webAddress).get();
+            } catch (Exception e) {
+                log("ERROROR");
+                return null;
+            }
+        };
+
+        getVertx().executeBlocking(call)
+                .onComplete(res -> {
+                    try {
+                        pageToVisit--;
+                        Document doc = res.result();
+                        if (doc == null) {
+                            return;
+                        }
+                        Elements elements = doc.body().select("*");
+                        for (Element element : elements) {
+                            if (Pattern.compile(Pattern.quote(wordToFind), Pattern.CASE_INSENSITIVE).matcher(element.ownText()).find()) {
+                                String[] words = element.ownText().split("[\\s\\p{Punct}]+");
+                                for (String word : words) {
+                                    if (word.equalsIgnoreCase(wordToFind)) {
+                                        this.getVertx().eventBus().publish("word-found", webAddress);
+                                    }
+                                }
+                            }
+                        }
+                        if (actualDepth < depth) {
+                            findLinks(doc, promise, actualDepth + 1);
+                        }
+                    } finally {
+                        if (pageToVisit == 0 && actualDepth == depth) {
+                            promise.complete();
                         }
                     }
-                }
-            }
-            if (actualDepth < depth) {
-                vertx.eventBus().publish("links-found", findLinks(doc));
-            } else {
-                promise.future().onComplete((fut) -> {
-                    result.accept(map);
                 });
-                promise.complete();
-            }
-        } catch (Exception e) {
-            System.out.println("[ERROR]: Can't load the page: " + webAddress);
-        }
     }
 
-    public Set<String> findLinks(final Document doc) {
-        return doc.getElementsByTag("a")
+    public void findLinks(final Document doc, Promise<Void> promise, int actualDepth) {
+        var newLinks = doc.getElementsByTag("a")
                 .stream()
                 .map(l -> l.attr("href"))
                 .filter(l -> l.startsWith("http"))
                 .collect(Collectors.toSet());
+        this.pageLinks.clear();
+        this.pageLinks.addAll(newLinks);
+
+        pageToVisit = pageLinks.size();
+        pageLinks.forEach(pl -> {
+            try {
+                if (!map.containsKey(pl)) {
+                    findWord(pl, promise, actualDepth);
+                }
+            } catch (IOException e) {
+                System.out.println("ERRORR");
+            }
+        });
     }
 
 

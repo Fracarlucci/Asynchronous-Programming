@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class WordOccurrencesEventLoop extends AbstractVerticle implements WordOccurrences {
+public class WordOccurrencesEventLoop extends AbstractVerticle {
 
   //    private final int nThreads;
   private int counter = 0;
@@ -28,19 +28,20 @@ public class WordOccurrencesEventLoop extends AbstractVerticle implements WordOc
   private final Set<String> pageLinks = new HashSet<>();
   Document doc;
 
-  @Override
-  public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
-    Vertx vertx = Vertx.vertx();
-    Future<String> future = vertx.deployVerticle(new VerticleFinder(webAddress, wordToFind, depth, res -> {
-              System.out.println("RESULT " + res); // Ogni occorenza viene stampata
-              result.putAll(res);
-            }));
+  public void getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
+    Vertx.vertx().deployVerticle(new VerticleFinder(webAddress, wordToFind, depth, res -> {
+      result.putAll(res);
+//      System.out.println(res);
+    })).onComplete(res -> {
+      final int viewedLinks = result.keySet().size();
+      final int wordsFound = result.values().stream().mapToInt(Integer::intValue).sum();
 
-    while (!future.isComplete()) {
-      System.out.println("Waiting for future...");
-    }
-    System.out.println(future.result());
-    vertx.close();
-    return result;
+      System.out.println("*************** REPORT ***************");
+      System.out.println("Occurrences of \"" + wordToFind + "\" : link");
+      result.forEach((k, v) -> System.out.println(v + " : " + k));
+      System.out.println("Links: " + viewedLinks);
+      System.out.println("Words found: " + wordsFound);
+      System.exit(0);
+    });
   }
 }
