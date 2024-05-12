@@ -49,7 +49,9 @@ public class WordOccurrencesReactive implements WordOccurrences {
             final Document doc = Jsoup.connect(address).get();
             links = findLinks(doc);
             final Integer counter = findWord(doc);
-            map.put(address, counter);
+            if(counter != 0) {
+              map.put(address, counter);
+            }
             depthlinks.addAll(links);
           } catch (Exception e) {
             System.out.println(e);
