@@ -1,6 +1,7 @@
 package pcd.ass02.part2.test;
 
 import pcd.ass02.part2.lib.WordOccurrences;
+import pcd.ass02.part2.lib.eventLoop.WordOccurrencesEventLoop;
 import pcd.ass02.part2.lib.reactiveThread.WordOccurrencesReactive;
 
 import java.io.IOException;
@@ -15,11 +16,14 @@ public class TestWordOccurences {
     final int depth = 2;
     final int nThreads = Runtime.getRuntime().availableProcessors();
 
-//        final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop(nThreads);
+
+//        final WordOccurrencesEventLoop wordOccEventLoop = new WordOccurrencesEventLoop();
 //        final WordOccurrences wordOccVirtualThread = new WordOccurrencesVirtualThread(nThreads);
     final WordOccurrences wordOccReactive = new WordOccurrencesReactive();
 
     final Map<String, Integer> report = wordOccReactive.getWordOccurences(webAddress, wordToFind, depth);
+//     wordOccEventLoop.getWordOccurences(webAddress, wordToFind, depth);
+    // For using wordOccEventLoop, comment down below
     final int viewedLinks = report.keySet().size();
     final int wordsFound = report.values().stream().mapToInt(Integer::intValue).sum();
 
