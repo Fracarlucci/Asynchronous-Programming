@@ -44,7 +44,7 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
     Set<String> foundLinks = new HashSet<>();
 
 
-    for (int i = 0; i < depth; i++) {
+    for (int i = 0; i <= depth; i++) {
       final ExecutorService executor = Executors.newFixedThreadPool(pageLinks.size());
 
       pageLinks.forEach(page -> {
@@ -76,7 +76,7 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
     final ExecutorService executor = Executors.newFixedThreadPool(availablePages.size());
 
     availablePages.forEach(page -> {
-      wordFutureList.add(executor.submit(new WordFinderFuture(wordToFind, page, doc)));
+      wordFutureList.add(executor.submit(new WordFinderFuture(wordToFind, page)));
     });
 
     wordFutureList.forEach(future -> {
@@ -86,8 +86,8 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
           System.out.println("Future n. " + future + ": " + entry.getValue());
           map.put(entry.getKey(), entry.getValue());
         }
-      } catch (InterruptedException | ExecutionException e) {
-        throw new RuntimeException(e);
+      } catch (Exception e) {
+        System.out.println(e);
       }
     });
 

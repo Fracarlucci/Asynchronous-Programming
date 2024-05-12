@@ -13,7 +13,7 @@ public class TestWordOccurences {
 
         final String webAddress = "https://www.riminitoday.it/";
         final String wordToFind = "romagna";
-        final int depth = 2;
+        final int depth = 1;
         final int nThreads = Runtime.getRuntime().availableProcessors();
 
 //        final WordOccurrences wordOccEventLoop = new WordOccurrencesEventLoop(nThreads);

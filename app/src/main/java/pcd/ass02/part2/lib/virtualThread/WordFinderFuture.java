@@ -17,18 +17,17 @@ public class WordFinderFuture implements Callable<Map.Entry<String, Integer>> {
   private Document doc;
   private Integer counter;
 
-  public WordFinderFuture(String wordToFind, String webAddress, Document doc) {
+  public WordFinderFuture(String wordToFind, String webAddress) {
     this.wordToFind = wordToFind;
     this.webAddress = webAddress;
-    this.doc = doc;
     this.counter = 0;
   }
 
   @Override
   public Map.Entry<String, Integer> call() throws Exception {
     try {
-      this.doc = Jsoup.connect(webAddress).get();
-      Elements elements = doc.body().select("*");
+      final Document document = Jsoup.connect(webAddress).get();
+      Elements elements = document.body().select("*");
       for (Element element : elements) {
         if (Pattern.compile(Pattern.quote(this.wordToFind), Pattern.CASE_INSENSITIVE).matcher(element.ownText()).find()) {
           String[] words = element.ownText().split("[\\s\\p{Punct}]+");
