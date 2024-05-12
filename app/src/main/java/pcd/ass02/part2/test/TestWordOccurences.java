@@ -1,9 +1,7 @@
 package pcd.ass02.part2.test;
 
 import pcd.ass02.part2.lib.WordOccurrences;
-import pcd.ass02.part2.lib.EventLoop.WordOccurrencesEventLoop;
 import pcd.ass02.part2.lib.reactiveThread.WordOccurrencesReactive;
-import pcd.ass02.part2.lib.virtualThread.WordOccurrencesVirtualThread;
 
 import java.io.IOException;
 import java.util.Map;

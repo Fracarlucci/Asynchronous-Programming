@@ -1,4 +1,4 @@
-package pcd.ass02.part2.lib.EventLoop;
+package pcd.ass02.part2.lib.eventLoop;
 
 import io.vertx.core.*;
 

@@ -1,6 +1,6 @@
 package pcd.ass02.part2.test;
 
-import pcd.ass02.part2.lib.EventLoop.WordOccurrencesEventLoop;
+import pcd.ass02.part2.lib.eventLoop.WordOccurrencesEventLoop;
 
 public class TestWordOccurrences {
     public static void main(String[] args) {

@@ -14,7 +14,6 @@ public class WordFinderFuture implements Callable<Map.Entry<String, Integer>> {
 
   private final String wordToFind;
   private final String webAddress;
-  private Document doc;
   private Integer counter;
 
   public WordFinderFuture(String wordToFind, String webAddress) {
@@ -24,7 +23,7 @@ public class WordFinderFuture implements Callable<Map.Entry<String, Integer>> {
   }
 
   @Override
-  public Map.Entry<String, Integer> call() throws Exception {
+  public Map.Entry<String, Integer> call() {
     try {
       final Document document = Jsoup.connect(webAddress).get();
       Elements elements = document.body().select("*");
@@ -39,7 +38,7 @@ public class WordFinderFuture implements Callable<Map.Entry<String, Integer>> {
         }
       }
     } catch(Exception e) {
-      System.out.println("[ERROR]: Can't load the page: " + webAddress);
+      System.out.println("[ERROR]: Can't load the page! " + e);
     }
     return new AbstractMap.SimpleEntry<>(webAddress, counter);
   }

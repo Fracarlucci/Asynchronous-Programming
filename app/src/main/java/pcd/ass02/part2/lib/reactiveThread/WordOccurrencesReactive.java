@@ -7,8 +7,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import pcd.ass02.part2.lib.EventLoop.Monitor;
-import pcd.ass02.part2.lib.EventLoop.WordFinderThread;
 import pcd.ass02.part2.lib.WordOccurrences;
 
 import java.io.IOException;
@@ -26,12 +24,9 @@ public class WordOccurrencesReactive implements WordOccurrences {
   private final Map<String, Integer> map = new HashMap<>();
   private final Set<String> pageLinks = new HashSet<>();
   Document doc;
-  //    private final Deque<Event> events;
-  private Monitor counterMonitor = new Monitor();
-  private Monitor linksMonitor = new Monitor();
 
   @Override
-  public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) throws ExecutionException, InterruptedException, IOException {
+  public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth)  {
     this.wordToFind = wordToFind;
     pageLinks.add(webAddress);
     final List<Future<Map.Entry<String, Integer>>> wordFutureList = new ArrayList<>();
@@ -72,9 +67,7 @@ public class WordOccurrencesReactive implements WordOccurrences {
   }
 
   public Map<String, Integer> getMap() {
-    this.counterMonitor.requestRead();
     final Map<String, Integer> map = this.map;
-    this.counterMonitor.releaseRead();
     return map;
   }
 

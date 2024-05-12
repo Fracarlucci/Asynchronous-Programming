@@ -1,13 +1,13 @@
 package pcd.ass02.part2.GUI;
 
 import io.vertx.core.Vertx;
-import pcd.ass02.part2.lib.EventLoop.VerticleFinder;
+import pcd.ass02.part2.lib.eventLoop.VerticleFinder;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WordOccurrencesGUI extends JFrame {
+public class EventLoopGUI extends JFrame {
     private boolean isStopped = true;
     private JTextField webAddress, wordToFind, depth;
     private JTextArea resultArea;
@@ -15,7 +15,7 @@ public class WordOccurrencesGUI extends JFrame {
     private JButton stopButton;
     Vertx vertx;
 
-    public WordOccurrencesGUI() {
+    public EventLoopGUI() {
         setTitle("Word Occurrences");
         setSize(600, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -100,7 +100,7 @@ public class WordOccurrencesGUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            WordOccurrencesGUI gui = new WordOccurrencesGUI();
+            EventLoopGUI gui = new EventLoopGUI();
             gui.setVisible(true);
         });
     }
