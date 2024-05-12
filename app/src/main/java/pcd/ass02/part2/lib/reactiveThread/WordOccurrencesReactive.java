@@ -9,28 +9,21 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import pcd.ass02.part2.lib.WordOccurrences;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class WordOccurrencesReactive implements WordOccurrences {
-  private int counter = 0;
-  private String wordToFind;
+    private String wordToFind;
 
 
   private final Map<String, Integer> map = new HashMap<>();
   private final Set<String> pageLinks = new HashSet<>();
-  Document doc;
 
   @Override
   public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth)  {
     this.wordToFind = wordToFind;
     pageLinks.add(webAddress);
-    final List<Future<Map.Entry<String, Integer>>> wordFutureList = new ArrayList<>();
-    final List<Future<Set<String>>> linkFutureList = new ArrayList<>();
     Set<String> foundLinks = new HashSet<>();
 
 
@@ -67,8 +60,7 @@ public class WordOccurrencesReactive implements WordOccurrences {
   }
 
   public Map<String, Integer> getMap() {
-    final Map<String, Integer> map = this.map;
-    return map;
+      return this.map;
   }
 
   private Set<String> findLinks(final Document document) {
@@ -80,7 +72,7 @@ public class WordOccurrencesReactive implements WordOccurrences {
   }
 
   private Integer findWord(final Document document) {
-    counter = 0;
+    int counter = 0;
     Elements elements = document.body().select("*");
     for (Element element : elements) {
       if (Pattern.compile(Pattern.quote(this.wordToFind), Pattern.CASE_INSENSITIVE).matcher(element.ownText()).find()) {

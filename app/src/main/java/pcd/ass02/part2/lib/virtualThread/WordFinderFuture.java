@@ -22,6 +22,10 @@ public class WordFinderFuture implements Callable<Map.Entry<String, Integer>> {
     this.counter = 0;
   }
 
+  /**
+   * Implements a word finder
+   * @return a Map with key = link, value = wordCounter
+   */
   @Override
   public Map.Entry<String, Integer> call() {
     try {

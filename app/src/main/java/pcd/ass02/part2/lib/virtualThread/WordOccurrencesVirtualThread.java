@@ -15,7 +15,6 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
 
   @Override
   public Map<String, Integer> getWordOccurences(final String webAddress, final String wordToFind, final int depth) {
-//    this.wordToFind = wordToFind;
     pageLinks.add(webAddress);
     final List<Future<Map.Entry<String, Integer>>> wordFutureList = new ArrayList<>();
     final List<Future<Set<String>>> linkFutureList = new ArrayList<>();
@@ -71,14 +70,13 @@ public class WordOccurrencesVirtualThread implements WordOccurrences {
       }
     });
 
+    // It shutdown all virtual threads when map is ready
     executor.shutdown();
     return getMap();
   }
 
   public Map<String, Integer> getMap() {
-//    this.counterMonitor.requestRead();
     final Map<String, Integer> map = this.map;
-//    this.counterMonitor.releaseRead();
     return map;
   }
 }

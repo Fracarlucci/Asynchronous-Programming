@@ -17,8 +17,12 @@ public class LinkFinderFuture implements Callable<Set<String>> {
     this.webAddress = webAddress;
   }
 
+  /**
+   * Implements link finder
+   * @return a Set of links found
+   */
   @Override
-  public Set<String> call() throws Exception {
+  public Set<String> call() {
     try {
       doc = Jsoup.connect(webAddress).get();
     } catch (Exception e) {
