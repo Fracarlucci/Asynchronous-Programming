@@ -21,10 +21,11 @@ public class VerticleFinder extends AbstractVerticle {
 
     private final Map<String, Integer> map = new HashMap<>();
     private final Set<String> pageLinks = new HashSet<>();
+    private final Set<String> failedPages = new HashSet<>();
     private final int depth;
-    private String webAddress;
+    private final String webAddress;
     private int pageToVisit = 1;
-    private String wordToFind;
+    private final String wordToFind;
     private final Consumer<Map<String, Integer>> result;
 
     public VerticleFinder(final String webAddress, final String wordToFind, final int depth, Consumer<Map<String, Integer>> result) {
@@ -39,27 +40,27 @@ public class VerticleFinder extends AbstractVerticle {
         pageLinks.add(webAddress);
         log("START");
         this.getVertx().eventBus().consumer("word-found", message -> {
-            computeWordFound(message.body().toString(), promise);
+            computeWordFound(message.body().toString());
         });
         this.findWord(webAddress, promise, actualDepth);
     }
 
-    private void computeWordFound(final String webAddress, final Promise<Void> promise) {
+    private void computeWordFound(final String webAddress) {
         this.map.put(webAddress, this.map.get(webAddress) == null ? 1 : this.map.get(webAddress) + 1);
         result.accept(map);
     }
 
     /*
      * @param webAddress where to find the word
-     * @return the html document
      * @throws IOException if there are errors reading the web page
      */
-    private void findWord(String webAddress, Promise<Void> promise, int actualDepth) throws IOException {
+    private void findWord(final String webAddress, final Promise<Void> promise, int actualDepth) throws IOException {
         Callable<Document> call = () -> {
             try {
                 return Jsoup.connect(webAddress).get();
             } catch (Exception e) {
-                log("ERROROR");
+                this.failedPages.add(webAddress);
+                log("Can't load the page! " + e);
                 return null;
             }
         };
@@ -94,7 +95,12 @@ public class VerticleFinder extends AbstractVerticle {
                 });
     }
 
-    public void findLinks(final Document doc, Promise<Void> promise, int actualDepth) {
+    /**
+     * @param doc         the html page
+     * @param promise
+     * @param actualDepth the current depth of the recursion
+     */
+    public void findLinks(final Document doc, final Promise<Void> promise, final int actualDepth) {
         var newLinks = doc.getElementsByTag("a")
                 .stream()
                 .map(l -> l.attr("href"))
@@ -104,15 +110,15 @@ public class VerticleFinder extends AbstractVerticle {
         this.pageLinks.addAll(newLinks);
 
         pageToVisit = pageLinks.size();
-        pageLinks.forEach(pl -> {
-            try {
-                if (!map.containsKey(pl)) {
-                    findWord(pl, promise, actualDepth);
-                }
-            } catch (IOException e) {
-                System.out.println("ERRORR");
-            }
-        });
+        this.pageLinks.stream()
+                .filter(l -> !failedPages.contains(l) && !map.containsKey(l))
+                .forEach(pl -> {
+                    try {
+                        findWord(pl, promise, actualDepth);
+                    } catch (IOException e) {
+                        log("Can't load the page! " + e);
+                    }
+                });
     }
 
 
